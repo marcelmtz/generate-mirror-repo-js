@@ -13,10 +13,10 @@ of them; set it to the outgoing line's last tag, and name a branch only for the
 repositories that received patches:
 
 ```js
-// src/build-config/mage-os-release-refs/2.3.1.js
+// src/build-config/mage-os-release-refs/3.6.1.js
 module.exports = {
-  '*': '2.3.0',
-  'magento2': 'release/2.x',
+  '*': '3.6.0',
+  'magento2': 'release/3.x',
 };
 ```
 
