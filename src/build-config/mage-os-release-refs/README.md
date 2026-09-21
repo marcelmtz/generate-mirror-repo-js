@@ -7,24 +7,22 @@ this directory (or an explicit `--releaseRefsFile=`). When the file is absent �
 the normal case — every repository is built from the ref in
 `mageos-release-build-config.js`, which is the default branch.
 
-A file here exports a map of build-config keys to git refs. The `*` key applies
-to every repository:
+A file here exports a map of build-config keys to git refs. A release tags
+every repository, so every repository needs a ref. The `*` key applies to all
+of them; set it to the outgoing line's last tag, and name a branch only for the
+repositories that received patches:
 
 ```js
-// src/build-config/mage-os-release-refs/3.4.1.js
+// src/build-config/mage-os-release-refs/2.3.1.js
 module.exports = {
-  '*': 'release/3.x',
+  '*': '2.3.0',
+  'magento2': 'release/2.x',
 };
 ```
 
-Individual repositories can be overridden alongside the wildcard:
-
-```js
-module.exports = {
-  '*': 'release/3.x',
-  'security-package': 'main',
-};
-```
+Repositories and metapackages whose `fromTag` is later than the release are
+left out, so a release on an older line does not pick up what only exists from
+a later major on.
 
 This exists so a release can be built from a line other than the default
 branch — for example a patch release on the previous major while `main` has

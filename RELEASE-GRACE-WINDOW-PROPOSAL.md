@@ -113,11 +113,12 @@ Only two repositories need edits. The ~25 `mageos-*` build repos need
 
 ### 1. `mage-os/generate-mirror-repo-js` (this repo) — included in this PR
 
-- [x] `src/make/mageos-release.js` — `--releaseRefsFile` was documented in the
-      `--help` output but missing from the `parse-options` spec. Passing it
-      threw `TypeError: Cannot read properties of undefined (reading 'type')`
-      and aborted the build, so the feature was unreachable. Added
-      `$releaseRefsFile` to the spec.
+- [x] `src/make/mageos-release.js`, `src/release-build-tools.js` — a new
+      release now honours each repository's and metapackage's `fromTag`, which
+      until now only the history rebuild checked. Without this, a 2.x release
+      built with today's config would pick up `magento-zf-captcha`,
+      `magento-zf-soap` and the minimal edition, all of which start at 3.0.0.
+      Releases on the current line are unaffected.
 - [x] `.github/workflows/build-mageos-release.yml` — new optional
       `release_refs_file` input.
 - [x] `.github/workflows/deploy.yml` — threads it through as
@@ -125,6 +126,24 @@ Only two repositories need edits. The ~25 `mageos-*` build repos need
 - [x] `src/build-config/mage-os-release-refs/README.md` — documents the
       convention. No version file is included; adding one would change how that
       version builds.
+
+`--releaseRefsFile` parsing (#353) and per-repository keys in the refs file
+(#354) were already fixed on `main`.
+
+A release creates its tag in every repository from that repository's ref, so a
+refs file only needs a branch where there are patches. Everything else builds
+from the outgoing line's last tag, which every repository already has:
+
+```js
+module.exports = {'*': '2.3.0', 'magento2': 'release/2.x'};
+```
+
+**Minimal edition.** It is built by the same release, as the
+`product-minimal-edition` and `project-minimal-edition` metapackages, so it
+follows the same grace window: a 3.x security release after 4.0 includes it,
+and a 2.x one correctly leaves it out, since the minimal edition starts at
+3.0.0. The supported-version data in `mage-os/github-actions` has no
+minimal-edition entries at all, so it is not in the CI matrix today either.
 
 No change is needed in `.github/workflows/push-release-tag.yml`: it pushes tag
 objects from the build's working copies, so a tag created on `release/N.x`

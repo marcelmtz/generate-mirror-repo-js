@@ -12,6 +12,7 @@ const {
   createMetaPackageFromRepoDir
 } = require('./package-modules');
 const {isOnPackagist} = require('./packagist');
+const {isVersionGreaterOrEqual} = require('./utils');
 const repositoryBuildDefinition = require('./type/repository-build-definition');
 const packageDefinition = require('./type/package-definition');
 
@@ -22,6 +23,17 @@ function fsExists(dirOrFile) {
   } catch (exception) {
     return false;
   }
+}
+
+/**
+ * Whether a build config entry belongs in a release. fromTag is the first
+ * release an entry was part of. The history rebuild already honours it, but a
+ * new release built from an older line, such as a security release on the
+ * previous major, has to honour it too, or it picks up repositories and
+ * metapackages that only exist from a later major on.
+ */
+function isPartOfRelease(entry, releaseVersion) {
+  return !entry.fromTag || !releaseVersion || isVersionGreaterOrEqual(releaseVersion, entry.fromTag);
 }
 
 async function composerCreateMagentoProject(version) {
@@ -227,6 +239,7 @@ async function prepPackageForRelease(instruction, pkg, release, workingCopyPath)
 }
 
 module.exports = {
+  isPartOfRelease,
   validateVersionString,
   updateComposerConfigFromMagentoToMageOs,
   async getPackageVersionMap(releaseVersion, {skipSampleData = false} = {}) {
@@ -341,6 +354,10 @@ module.exports = {
     }
 
     for (const metapackage of (instruction.extraMetapackages || [])) {
+      if (!isPartOfRelease(metapackage, release.version)) {
+        console.log(`Skipping metapackage ${metapackage.name}: not part of releases before ${metapackage.fromTag}`);
+        continue;
+      }
       console.log(`Building metapackage ${metapackage.name}`);
       const built = await createMetaPackage(
         instruction,

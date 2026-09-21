@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const {
   getPackageVersionMap,
+  isPartOfRelease,
   prepRelease,
   processBuildInstructions,
   validateVersionString,
@@ -97,6 +98,10 @@ let distroRelease = new buildState({
       distroRelease.replaceVersions = upstreamVersionMap;
 
       for (const instruction of releaseInstructions) {
+        if (!isPartOfRelease(instruction, mageosRelease)) {
+          console.log(`Skipping ${instruction.key}: not part of releases before ${instruction.fromTag}`);
+          continue;
+        }
         if (releaseRefs['*']) {
           instruction.ref = releaseRefs['*'];
         }
