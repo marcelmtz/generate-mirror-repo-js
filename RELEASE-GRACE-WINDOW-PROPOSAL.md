@@ -41,13 +41,13 @@ that moves to a new Magento feature version is what merchants need time for.
 
 ```mermaid
 gantt
-    title Which Mage-OS major becomes the LTS line
+    title Which Mage-OS major becomes the LTS line (rule starts at 4.x)
     dateFormat YYYY-MM-DD
     axisFormat %b %Y
 
     section Magento 2.4.8
-    Mage-OS 2.x  -- LTS line for 2.4.8       :crit, m2, 2026-01-06, 2026-05-17
-    LTS window, 2.3.x security fixes         :w2, 2026-06-15, 2026-12-15
+    Mage-OS 2.x  -- ended, no window          :crit, m2, 2026-01-06, 2026-05-17
+    window the rule would have given -- not applied :crit, w2, 2026-06-15, 2026-12-15
 
     section Magento 2.4.9
     Mage-OS 3.x  -- not LTS, same base as 4.x :active, m3, 2026-06-15, 2027-03-01
@@ -55,8 +55,13 @@ gantt
     LTS window, 4.3.x security fixes          :w4, 2027-09-01, 2028-03-01
 
     section Next feature release (2.4.10 or 2.5)
-    Mage-OS 5.x  -- current, LTS at the next base :active, m5, 2027-09-01, 2028-09-01
+    Mage-OS 5.x -- current, LTS at the next base :active, m5, 2027-09-01, 2028-09-01
 ```
+
+**The rule is not retroactive.** 2.x is closed and stays closed; the 2.4.8 row
+below only shows what the rule would have given, to check it against real dates.
+The first LTS line is the last major built on 2.4.9 — 4.x if 4.0 keeps that base
+and 5.0 moves to the next one, which is the expected path.
 
 Dates after 3.4.0 are illustrative. Two things are load-bearing: only the line
 before a base change gets a window, and at most two lines are ever live.
