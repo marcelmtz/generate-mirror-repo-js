@@ -38,21 +38,21 @@ that moves to a new Magento feature version is what merchants need time for.
 
 ```mermaid
 gantt
-    title Supported lines follow the upstream base, not the major number
+    title Which Mage-OS major becomes the LTS line
     dateFormat YYYY-MM-DD
     axisFormat %b %Y
 
     section Magento 2.4.8
-    Mage-OS 2.x                              :crit, m2, 2026-01-06, 2026-05-17
-    2.x window, 6 months after 3.0.0         :w2, 2026-06-15, 2026-12-15
+    Mage-OS 2.x  -- LTS line for 2.4.8       :crit, m2, 2026-01-06, 2026-05-17
+    LTS window, 2.3.x security fixes         :w2, 2026-06-15, 2026-12-15
 
     section Magento 2.4.9
-    Mage-OS 3.x                              :active, m3, 2026-06-15, 2027-03-01
-    Mage-OS 4.x, same base, no window needed :active, m4, 2027-03-01, 2027-09-01
-    4.x window, 6 months after 5.0.0         :w4, 2027-09-01, 2028-03-01
+    Mage-OS 3.x  -- not LTS, same base as 4.x :active, m3, 2026-06-15, 2027-03-01
+    Mage-OS 4.x  -- LTS line for 2.4.9        :active, m4, 2027-03-01, 2027-09-01
+    LTS window, 4.3.x security fixes          :w4, 2027-09-01, 2028-03-01
 
     section Magento 2.4.10
-    Mage-OS 5.x                              :active, m5, 2027-09-01, 2028-09-01
+    Mage-OS 5.x  -- current, LTS at 2.4.11    :active, m5, 2027-09-01, 2028-09-01
 ```
 
 Dates after 3.4.0 are illustrative. Two things are load-bearing: only the line
@@ -109,10 +109,10 @@ gitGraph
     branch release/4.x
     checkout main
     commit id: "5.x work"
-    commit id: "5.0.0 source" tag: "built as 5.0.0"
+    commit id: "5.0.0 source" tag: "5.0.0 current"
     checkout release/4.x
     commit id: "port Adobe patch"
-    commit id: "4.3.1 source" tag: "built as 4.3.1"
+    commit id: "4.3.1 source" tag: "4.3.1 LTS"
 ```
 
 1. **At 5.0.0 GA, point `release/4.x` at the commit 4.3.0 was built from** — the
