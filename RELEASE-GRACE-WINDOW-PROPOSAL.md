@@ -32,6 +32,9 @@ The same behaviour is encoded in `mage-os/github-actions` at
 > previous Magento feature version, for six months after the first release on
 > the new one.
 
+Adobe has not announced whether the next feature release is numbered 2.4.10 or
+2.5, and the rule does not depend on it: what matters is that the base changes.
+
 The window follows the **upstream base**, not the major number. A major that
 keeps the same Magento version is a safe upgrade, so it needs no window; a major
 that moves to a new Magento feature version is what merchants need time for.
@@ -51,8 +54,8 @@ gantt
     Mage-OS 4.x  -- LTS line for 2.4.9        :active, m4, 2027-03-01, 2027-09-01
     LTS window, 4.3.x security fixes          :w4, 2027-09-01, 2028-03-01
 
-    section Magento 2.4.10
-    Mage-OS 5.x  -- current, LTS at 2.4.11    :active, m5, 2027-09-01, 2028-09-01
+    section Next feature release (2.4.10 or 2.5)
+    Mage-OS 5.x  -- current, LTS at the next base :active, m5, 2027-09-01, 2028-09-01
 ```
 
 Dates after 3.4.0 are illustrative. Two things are load-bearing: only the line
@@ -192,7 +195,11 @@ dates change.
    window?** Under this rule 3.x gets none, because it shares Magento 2.4.9 with
    4.x. That is correct only if the 3→4 upgrade really is easy; a dropped PHP
    version or removed modules would leave people stuck.
-2. **Six months** — long enough to plan a Magento feature upgrade?
+2. **Six months** — long enough to plan a Magento feature upgrade? Adobe's own
+   precedent is longer: after 2.4.0 GA on 2020-07-28 it kept patching 2.3 until
+   2022-09-08, ending at `2.3.7-p4` — about two years of parallel support across
+   a base change. Our scope is narrower (forwarding Adobe's patches, not writing
+   them), and it lasts only as long as Adobe patches that base.
 3. **Who owns the maintenance line?** Ubuntu and Debian both fund or delegate
    the tail; the same-day rule above only holds if one team ships both lines.
 
