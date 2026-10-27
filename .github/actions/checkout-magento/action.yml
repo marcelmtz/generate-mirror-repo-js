@@ -88,13 +88,29 @@ runs:
     # here. The key was renamed to policy.advisories.block in 2.10; audit.block-insecure
     # is the pre-2.10 spelling, and neither exists on 1.x/2.2.x, hence the fallbacks.
     # Under GitHub Actions, Composer reports an unknown key as an ::error:: annotation
-    # on stdout, so both streams are silenced to keep a missing key from looking fatal.
+    # on stdout, so the probe output is captured rather than redirected. Only the
+    # unknown-key message is swallowed: any other failure (an unwritable or malformed
+    # composer.json, say) is printed and fails the step, rather than being reported as
+    # "nothing to do" and resurfacing later as an opaque solver error.
     - name: Allow installing advisory-affected versions
       run: |
-        if composer config --no-interaction policy.advisories.block false >/dev/null 2>&1; then
-          echo "Advisory blocking disabled via policy.advisories.block"
-        elif composer config --no-interaction audit.block-insecure false >/dev/null 2>&1; then
-          echo "Advisory blocking disabled via audit.block-insecure"
+        setting=
+        for key in policy.advisories.block audit.block-insecure; do
+          if output=$(composer config --no-interaction "$key" false 2>&1); then
+            setting=$key
+            break
+          fi
+          # Symfony wraps the exception text, so collapse whitespace before matching.
+          case "$(printf '%s' "$output" | tr -s '[:space:]' ' ')" in
+            *"does not exist or is not supported by this command"*) ;;
+            *)
+              printf '%s\n' "$output" >&2
+              exit 1
+              ;;
+          esac
+        done
+        if [ -n "$setting" ]; then
+          echo "Advisory blocking disabled via $setting"
         else
           echo "Composer ${{ inputs.composer-version }} does not block advisory-affected versions; nothing to do"
         fi
